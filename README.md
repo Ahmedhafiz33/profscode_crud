@@ -75,9 +75,6 @@ final response = await crud.postRequest('https://api.example.com/users', data);
 print(response);
 ```
 
-💡 **Screenshot Example:**
-![POST request screenshot](https://user-images.githubusercontent.com/example/post_request.png)
-
 ---
 
 ### 3️⃣ PUT Request
