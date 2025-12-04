@@ -2,7 +2,7 @@
 
 name: profscode_crud
 description: A simple GetX-based CRUD helper for HTTP requests.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/Ahmedhafiz33/profscode_crud
 documentation: https://github.com/Ahmedhafiz33/profscode_crud#readme
 repository: https://github.com/Ahmedhafiz33/profscode_crud
