@@ -20,6 +20,7 @@ dependencies:
   http: ^1.6.0 
   flutter:
     sdk: flutter
+  ionicons: ^0.2.2
 
 dev_dependencies:
   lints: ^6.0.0

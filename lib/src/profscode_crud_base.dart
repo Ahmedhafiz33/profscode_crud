@@ -140,4 +140,114 @@ class Crud extends GetxController {
     update();
     return null;
   }
+
+  Future<dynamic> headRequest(String url, {bool retry = true}) async {
+    try {
+      final response = await http.head(
+        Uri.parse(url),
+        headers: _defaultHeaders(),
+      );
+
+      if (response.statusCode == 200) return response.headers;
+
+      if (response.statusCode == 401 && retry) {
+        bool refreshed = await _ensureRefreshToken();
+        if (refreshed) return await headRequest(url, retry: false);
+      }
+
+      return response.headers;
+    } catch (e) {
+      debugPrint("HEAD Exception: $e");
+    }
+    update();
+    return null;
+  }
+
+  Future<dynamic> patchRequest(
+    String url,
+    Map datas, {
+    bool retry = true,
+  }) async {
+    try {
+      final response = await http.patch(
+        Uri.parse(url),
+        body: datas,
+        headers: _defaultHeaders(),
+      );
+
+      if (response.statusCode == 200) return jsonDecode(response.body);
+
+      if (response.statusCode == 401 && retry) {
+        bool refreshed = await _ensureRefreshToken();
+        if (refreshed) return await patchRequest(url, datas, retry: false);
+      }
+
+      return jsonDecodeSafe(response.body);
+    } catch (e) {
+      debugPrint("PATCH Exception: $e");
+    }
+    update();
+    return null;
+  }
+
+  Future<dynamic> optionsRequest(String url, {bool retry = true}) async {
+    try {
+      final response = await http.Request(
+        "OPTIONS",
+        Uri.parse(url),
+      ).send().then((res) => http.Response.fromStream(res));
+
+      if (response.statusCode == 200) return response.headers;
+
+      if (response.statusCode == 401 && retry) {
+        bool refreshed = await _ensureRefreshToken();
+        if (refreshed) return await optionsRequest(url, retry: false);
+      }
+
+      return response.headers;
+    } catch (e) {
+      debugPrint("OPTIONS Exception: $e");
+    }
+    update();
+    return null;
+  }
+
+  Future<dynamic> fileRequest(
+    String url, {
+    required Map<String, String> fields,
+    required List<http.MultipartFile> files,
+    bool retry = true,
+  }) async {
+    try {
+      final request = http.MultipartRequest("POST", Uri.parse(url));
+      request.headers.addAll(_defaultHeaders());
+      request.fields.addAll(fields);
+      request.files.addAll(files);
+
+      final response = await request.send();
+      final responseBody = await http.Response.fromStream(response);
+
+      if (response.statusCode == 200) {
+        return jsonDecodeSafe(responseBody.body);
+      }
+
+      if (response.statusCode == 401 && retry) {
+        bool refreshed = await _ensureRefreshToken();
+        if (refreshed) {
+          return await fileRequest(
+            url,
+            fields: fields,
+            files: files,
+            retry: false,
+          );
+        }
+      }
+
+      return jsonDecodeSafe(responseBody.body);
+    } catch (e) {
+      debugPrint("UPLOAD Exception: $e");
+    }
+    update();
+    return null;
+  }
 }

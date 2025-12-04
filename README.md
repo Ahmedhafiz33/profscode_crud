@@ -2,13 +2,13 @@
 
 A lightweight, **GetX-based HTTP CRUD helper** for Flutter/Dart.
 Completely **user-controlled**: no global tokens or headers are required.
-Easily handles GET, POST, PUT, DELETE requests, with optional token refresh logic.
+Easily handles GET, POST, PUT, DELETE, Head, Patch, Options, File requests, with optional token refresh logic.
 
 ---
 
 ## Features
 
-* GET, POST, PUT, DELETE requests
+* GET, POST, PUT, DELETE, Head, Patch, Options, File requests
 * Optional **custom headers**
 * Optional **token refresh handling**
 * Fully **injectable**, no global state
@@ -24,7 +24,7 @@ Add to your `pubspec.yaml`:
 dependencies:
   profscode_crud:
     git:
-      url: https://github.com/yourusername/profscode_crud.git
+      url: https://github.com/Ahmedhafiz33/profscode_crud.git
       ref: main
 ```
 
@@ -62,11 +62,6 @@ void main() async {
 }
 ```
 
-💡 **GIF Example:**
-![GET request GIF](https://user-images.githubusercontent.com/example/get_request.gif)
-
----
-
 ### 2️⃣ POST Request
 
 ```dart
@@ -74,8 +69,6 @@ final data = {'name': 'John', 'email': 'john@example.com'};
 final response = await crud.postRequest('https://api.example.com/users', data);
 print(response);
 ```
-
----
 
 ### 3️⃣ PUT Request
 
