@@ -21,17 +21,15 @@ class MyApp extends StatelessWidget {
           primary: Color(0xFF4F46E5),
           secondary: Color(0xFF9333EA),
         ),
+        cardTheme: const CardThemeData(
+          color: Color(0xFF1A1B1E),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(18)),
+          ),
+        ),
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF111113),
           elevation: 0,
-        ),
-        cardTheme: CardThemeData(
-          color: const Color(0xFF1A1B1E),
-          elevation: 4,
-          shadowColor: Colors.black54,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
         ),
       ),
       home: const CrudExamplePage(),
@@ -48,7 +46,8 @@ class CrudExamplePage extends StatefulWidget {
 
 class _CrudExamplePageState extends State<CrudExamplePage> {
   late Crud crud;
-  String resultText = 'Press a button to make a request';
+  bool loading = false;
+  String resultText = 'Response will appear here';
 
   @override
   void initState() {
@@ -66,82 +65,32 @@ class _CrudExamplePageState extends State<CrudExamplePage> {
     );
   }
 
-  Future<void> _getUsers() async {
-    final response = await crud.getRequest(
-      'https://jsonplaceholder.typicode.com/users',
-    );
-    setState(() => resultText = 'GET Response: $response');
+  Future<void> _run(Future<dynamic> Function() action) async {
+    setState(() => loading = true);
+    final res = await action();
+    setState(() {
+      loading = false;
+      resultText = res.toString();
+    });
   }
 
-  Future<void> _postUser() async {
-    final data = {'name': 'John Doe', 'email': 'john@example.com'};
-    final response = await crud.postRequest(
-      'https://jsonplaceholder.typicode.com/users',
-      data,
-    );
-    setState(() => resultText = 'POST Response: $response');
-  }
-
-  Future<void> _putUser() async {
-    final data = {'name': 'Jane Doe'};
-    final response = await crud.putRequest(
-      'https://jsonplaceholder.typicode.com/users/1',
-      data,
-    );
-    setState(() => resultText = 'PUT Response: $response');
-  }
-
-  Future<void> _patchUser() async {
-    final data = {'email': 'newmail@example.com'};
-    final response = await crud.patchRequest(
-      'https://jsonplaceholder.typicode.com/users/1',
-      data,
-    );
-    setState(() => resultText = 'PATCH Response: $response');
-  }
-
-  Future<void> _deleteUser() async {
-    final response = await crud.deleteRequest(
-      'https://jsonplaceholder.typicode.com/users/1',
-    );
-    setState(() => resultText = 'DELETE Response: $response');
-  }
-
-  Future<void> _headRequest() async {
-    final response = await crud.headRequest(
-      'https://jsonplaceholder.typicode.com/users',
-    );
-    setState(() => resultText = 'HEAD Response: $response');
-  }
-
-  Future<void> _optionsRequest() async {
-    final response = await crud.optionsRequest(
-      'https://jsonplaceholder.typicode.com/users',
-    );
-    setState(() => resultText = 'OPTIONS Response: $response');
-  }
-
-  Future<void> _uploadFile() async {
-    final response = await crud.fileRequest(
-      'https://example.com/upload',
-      fields: {},
-      files: [],
-    );
-    setState(() => resultText = 'UPLOAD Response: $response');
-  }
-
-  Widget actionButton(String label, IconData icon, VoidCallback onTap) {
-    return Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
+  Widget actionTile(String title, IconData icon, VoidCallback onTap) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: onTap,
+      child: Card(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-          child: Row(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 26, color: Colors.white),
-              const SizedBox(width: 16),
-              Text(label, style: const TextStyle(fontSize: 18)),
+              Icon(icon, size: 30, color: Colors.white),
+              const SizedBox(height: 14),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 15),
+              ),
             ],
           ),
         ),
@@ -153,57 +102,139 @@ class _CrudExamplePageState extends State<CrudExamplePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profscode CRUD Example'),
+        title: const Text('Profscode CRUD Demo'),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            actionButton('GET Users', Ionicons.download_outline, _getUsers),
-            actionButton('POST User', Ionicons.add_circle_outline, _postUser),
-            actionButton('PUT User', Ionicons.reload_outline, _putUser),
-            actionButton('PATCH User', Ionicons.build_outline, _patchUser),
-            actionButton(
-              'DELETE User',
-              Ionicons.trash_bin_outline,
-              _deleteUser,
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: GridView.count(
+              physics: const NeverScrollableScrollPhysics(),
+
+              shrinkWrap: true,
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.2,
+              children: [
+                actionTile(
+                  'GET Users',
+                  Ionicons.download_outline,
+                  () => _run(
+                    () => crud.getRequest(
+                      'https://jsonplaceholder.typicode.com/users',
+                    ),
+                  ),
+                ),
+                actionTile(
+                  'POST User',
+                  Ionicons.add_circle_outline,
+                  () => _run(
+                    () => crud.postRequest(
+                      'https://jsonplaceholder.typicode.com/users',
+                      {'name': 'John Doe'},
+                    ),
+                  ),
+                ),
+                actionTile(
+                  'PUT User',
+                  Ionicons.reload_outline,
+                  () => _run(
+                    () => crud.putRequest(
+                      'https://jsonplaceholder.typicode.com/users/1',
+                      {'name': 'Jane'},
+                    ),
+                  ),
+                ),
+                actionTile(
+                  'PATCH User',
+                  Ionicons.build_outline,
+                  () => _run(
+                    () => crud.patchRequest(
+                      'https://jsonplaceholder.typicode.com/users/1',
+                      {'email': 'new@mail.com'},
+                    ),
+                  ),
+                ),
+                actionTile(
+                  'DELETE User',
+                  Ionicons.trash_outline,
+                  () => _run(
+                    () => crud.deleteRequest(
+                      'https://jsonplaceholder.typicode.com/users/1',
+                    ),
+                  ),
+                ),
+                actionTile(
+                  'HEAD Request',
+                  Ionicons.eye_outline,
+                  () => _run(
+                    () => crud.headRequest(
+                      'https://jsonplaceholder.typicode.com/users',
+                    ),
+                  ),
+                ),
+                actionTile(
+                  'OPTIONS',
+                  Ionicons.help_circle_outline,
+                  () => _run(
+                    () => crud.optionsRequest(
+                      'https://jsonplaceholder.typicode.com/users',
+                    ),
+                  ),
+                ),
+                actionTile(
+                  'UPLOAD File',
+                  Ionicons.cloud_upload_outline,
+                  () => _run(
+                    () => crud.fileRequest(
+                      'https://example.com/upload',
+                      fields: {},
+                      files: [],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            actionButton('HEAD Request', Ionicons.eye_outline, _headRequest),
-            actionButton(
-              'OPTIONS Request',
-              Ionicons.help_circle_outline,
-              _optionsRequest,
+          ),
+
+          /// RESPONSE AREA
+          Card(
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      child: Text(
+                        resultText,
+                        style: const TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
             ),
-            actionButton(
-              'UPLOAD File',
-              Ionicons.cloud_upload_outline,
-              _uploadFile,
+          ),
+
+          const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: Column(
+              children: [
+                Text(
+                  'Profscode CRUD Package',
+                  style: TextStyle(color: Colors.white54, fontSize: 12),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'github.com/Ahmedhafiz33',
+                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            Expanded(child: SingleChildScrollView(child: Text(resultText))),
-            const SizedBox(height: 20),
-            const Divider(height: 30, color: Colors.white30),
-            const Text(
-              'For questions or suggestions:',
-              style: TextStyle(fontSize: 14, color: Colors.white54),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Website: http://ahmedhafiz.com.tr',
-              style: TextStyle(fontSize: 14, color: Colors.white70),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Instagram: @ahmedhafiz.33',
-              style: TextStyle(fontSize: 14, color: Colors.white70),
-            ),
-            const Text(
-              'GitHub: github.com/Ahmedhafiz33',
-              style: TextStyle(fontSize: 14, color: Colors.white70),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

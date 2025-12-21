@@ -2,7 +2,7 @@
 
 name: profscode_crud
 description: A simple GetX-based CRUD helper for HTTP requests.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/Ahmedhafiz33/profscode_crud
 documentation: https://github.com/Ahmedhafiz33/profscode_crud#readme
 repository: https://github.com/Ahmedhafiz33/profscode_crud
@@ -11,11 +11,11 @@ repository: https://github.com/Ahmedhafiz33/profscode_crud
 # repository: https://github.com/my_org/my_repo
 
 environment:
-  sdk: ^3.9.0
+  sdk: ^3.10.4
 
 # Add regular dependencies here.
 dependencies:
-  path: ^1.9.0
+  path: ^1.9.1
   get: ^4.7.3 
   http: ^1.6.0 
   flutter:
