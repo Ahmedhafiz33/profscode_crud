@@ -224,6 +224,18 @@ Feel free to open an issue or submit a pull request.
 
 ---
 
+## 🧪 Testing
+
+Run the package tests with:
+
+```bash
+dart test
+```
+
+The package can be used with GetX, Riverpod, Provider, Bloc, or no state-management solution at all.
+
+---
+
 ## 📄 License
 
 MIT License

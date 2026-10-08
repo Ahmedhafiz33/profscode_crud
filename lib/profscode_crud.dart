@@ -1,8 +1,7 @@
-/// Support for doing something awesome.
+/// A lightweight, GetX-friendly HTTP CRUD helper for Flutter and Dart.
 ///
-/// More dartdocs go here.
+/// The package does not require GetX and keeps request state local to each
+/// [Crud] instance.
 library;
 
 export 'src/profscode_crud_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
